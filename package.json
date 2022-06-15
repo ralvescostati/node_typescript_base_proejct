@@ -16,7 +16,6 @@
     "test:watch": "NODE_ENV=test jest --watchAll --noStackTrace --runInBand",
     "test:staged": "NODE_ENV=test yarn test -- --findRelatedTests src/",
     "test:cov": "NODE_ENV=test jest --coverage --detectOpenHandles",
-    "test:coveralls": "NODE_ENV=test yarn run test:ci && coveralls < coverage/lcov.info",
     "prepare": "husky install"
   },
   "devDependencies": {
