@@ -56,7 +56,7 @@ jobs:
       id: version
       run: |
         TAG=${{ github.sha }}
-        echo "${TAG}"
+        echo "${{TAG}}"
         GIT_BRANCH=${GITHUB_REF#refs/heads/}
         GIT_HASH=$(git rev-parse --short "$GITHUB_SHA")
         echo ::set-output name=tag::${GIT_BRANCH}${GIT_HASH}
@@ -85,9 +85,10 @@ jobs:
 
     - name: Build and push the image
       run: |
-        docker build . --tag ghcr.io/ralvescostati/node_base:${{ needs.ci.outputs.tag }}"
-        docker run ghcr.io/ralvescostati/node_base:${{ needs.ci.outputs.tag }}"
-        docker push ghcr.io/ralvescostati/node_base:${{ needs.ci.outputs.tag }}"
+        TAG=${{ github.sha }}
+        docker build . --tag ghcr.io/ralvescostati/node_base:${{ TAG }}"
+        docker run ghcr.io/ralvescostati/node_base:${{ TAG }}"
+        docker push ghcr.io/ralvescostati/node_base:${{ TAG }}"
 
   deploy_dev:
     needs: registry
