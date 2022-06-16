@@ -1,13 +1,17 @@
-name: Pipeline
+name: pipeline
 
 on:
   push:
     branches: 
+      - develop
+      - main
+  pull_request:
+    branches:
       - '*'
-  workflow_dispatch:
 
 jobs:
   ci:
+    if: ${{ github.ref != 'refs/heads/main' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -36,7 +40,7 @@ jobs:
 
     - name: Artifact
       uses: actions/upload-artifact@v2
-      if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
+      if: ${{ github.ref == 'refs/heads/develop' }}
       with:
         name: artifact
         path: |
@@ -50,8 +54,7 @@ jobs:
     
   registry:
     needs: ci
-    if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
-
+    if: ${{ github.ref == 'refs/heads/develop' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -68,17 +71,16 @@ jobs:
         password: ${{ secrets.CR_PAT }}
 
     - name: Build and push the image
+      env:
+        TAG: ${{ github.sha }}
       run: |
-        GIT_BRANCH=${GITHUB_REF#refs/heads/}
-        GIT_HASH=$(git rev-parse --short "$GITHUB_SHA")
-        docker build . --tag ghcr.io/ralvescostati/node_base:${GIT_BRANCH}_${GIT_HASH}
-        docker run ghcr.io/ralvescostati/node_base:${GIT_BRANCH}_${GIT_HASH}
-        docker push ghcr.io/ralvescostati/node_base:${GIT_BRANCH}_${GIT_HASH}
+        docker build . --tag ghcr.io/ralvescostati/node_base:${TAG}
+        docker run ghcr.io/ralvescostati/node_base:${TAG}
+        docker push ghcr.io/ralvescostati/node_base:${TAG}
 
   deploy_dev:
     needs: registry
-    if: github.ref == 'refs/heads/develop'
-
+    if: ${{ github.ref == 'refs/heads/develop' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -86,11 +88,10 @@ jobs:
       run: echo "Deployed :)"
   
   deploy_prod:
-    if: github.ref == 'refs/heads/main'
-
+    if: ${{ github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
 
     steps:
     - name: Deploy Prod
-      run: echo "Deployed :~)" 
+      run: echo "Deployed :)" 
 
