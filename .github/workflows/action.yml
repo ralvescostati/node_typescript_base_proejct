@@ -89,6 +89,8 @@ jobs:
   
   deploy_prod:
     if: ${{ github.ref == 'refs/heads/main' }}
+    environment:
+      name: prod
     runs-on: ubuntu-latest
 
     steps:
