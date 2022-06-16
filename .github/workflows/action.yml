@@ -8,6 +8,7 @@ on:
   
 jobs:
   ci:
+    if: github.ref != 'refs/heads/main' 
     runs-on: ubuntu-latest
 
     steps:
@@ -73,12 +74,11 @@ jobs:
       run: echo "Deployed :)"
   
   deploy_prod:
-    needs: build
     if: github.ref == 'refs/heads/main'
 
     runs-on: ubuntu-latest
 
     steps:
     - name: Deploy Prod
-      run: echo "Deployed :)." 
+      run: echo "Deployed :~)" 
 
