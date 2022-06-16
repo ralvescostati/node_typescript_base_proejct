@@ -1,13 +1,17 @@
-name: Pipeline
+name: pipeline
 
 on:
   push:
     branches: 
+      - develop
+      - main
+  pull_request:
+    branches:
       - '*'
-  workflow_dispatch:
 
 jobs:
   ci:
+    if: ${{ github.ref != 'refs/heads/main' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -50,8 +54,7 @@ jobs:
     
   registry:
     needs: ci
-    if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
-
+    if: ${{ github.ref == 'refs/heads/dev' && github.event.pull_request.merged == true }}
     runs-on: ubuntu-latest
 
     steps:
@@ -78,7 +81,6 @@ jobs:
   deploy_dev:
     needs: registry
     if: github.ref == 'refs/heads/develop'
-
     runs-on: ubuntu-latest
 
     steps:
@@ -87,7 +89,6 @@ jobs:
   
   deploy_prod:
     if: github.ref == 'refs/heads/main'
-
     runs-on: ubuntu-latest
 
     steps:
