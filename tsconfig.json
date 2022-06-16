@@ -5,7 +5,7 @@
     "allowJs": true,                       /* Allow javascript files to be compiled. */
     "outDir": "dist",                        /* Redirect output structure to the directory. */
     "strict": true,                           /* Enable all strict type-checking options. */
-    "rootDir": ".",
+    "rootDir": "./src",
     "baseUrl": "./src",
     "esModuleInterop": true,                  /* Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports. Implies 'allowSyntheticDefaultImports'. */
     "resolveJsonModule": true,
@@ -15,11 +15,11 @@
     "declaration": true,
     "removeComments": true,
     "paths": {
-      "@app/*": ["src/app/*"],
-      "@domain/*": ["src/domain/*"],
-      "@infra/*": ["src/infra/*"],
-      "@interfaces/*": ["src/interfaces/*"],
-      "@ts/*": ["src/ts"],
+      "@app/*": ["app/*"],
+      "@domain/*": ["domain/*"],
+      "@infra/*": ["infra/*"],
+      "@interfaces/*": ["interfaces/*"],
+      "@ts/*": ["ts/*"],
     },
   },
   "include": ["./src"],
