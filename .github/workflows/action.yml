@@ -1,14 +1,13 @@
-name: API CI Develop
+name: Pipeline
 
 on:
   push:
-    branches: [main, develop]
-  pull_request:
-    branches: [main, develop]
-  
+    branches: 
+      - '*'
+  workflow_dispatch:
+
 jobs:
   ci:
-    if: github.ref != 'refs/heads/main' 
     runs-on: ubuntu-latest
 
     steps:
@@ -19,11 +18,6 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: '16.x'
-
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
 
     - name: Install dependencies
       run: npm ci
@@ -39,16 +33,32 @@ jobs:
 
     - name: Build
       run: npm run build
+
+    - name: Artifact
+      uses: actions/upload-artifact@v2
+      if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
+      with:
+        name: artifact
+        path: |
+          dist
+          .env*
+          .dockerignore
+          Dockerfile
+          package*.json
+          README.md
+        retention-days: 1
     
-  build:
+  registry:
     needs: ci
-    if: github.event.pull_request.merged == true
+    if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
 
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+    - name: Download artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: artifact
 
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v1
@@ -57,14 +67,16 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.CR_PAT }}
 
-    - name: Build the image
+    - name: Build and push the image
       run: |
-        docker build . --tag ghcr.io/ralvescostati/node_base:latest
-        docker run ghcr.io/ralvescostati/node_base:latest
-        docker push ghcr.io/ralvescostati/node_base:latest
+        GIT_BRANCH=${GITHUB_REF#refs/heads/}
+        GIT_HASH=$(git rev-parse --short "$GITHUB_SHA")
+        docker build . --tag ghcr.io/ralvescostati/node_base:${GIT_BRANCH}_${GIT_HASH}
+        docker run ghcr.io/ralvescostati/node_base:${GIT_BRANCH}_${GIT_HASH}
+        docker push ghcr.io/ralvescostati/node_base:${GIT_BRANCH}_${GIT_HASH}
 
   deploy_dev:
-    needs: build
+    needs: registry
     if: github.ref == 'refs/heads/develop'
 
     runs-on: ubuntu-latest
