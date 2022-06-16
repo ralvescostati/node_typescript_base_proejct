@@ -55,7 +55,7 @@ jobs:
     - name: Image version
       id: version
       run: |
-        TAG = ${github.sha}
+        TAG=${{ github.sha }}
         echo "${TAG}"
         GIT_BRANCH=${GITHUB_REF#refs/heads/}
         GIT_HASH=$(git rev-parse --short "$GITHUB_SHA")
