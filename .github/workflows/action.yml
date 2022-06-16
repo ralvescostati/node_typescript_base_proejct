@@ -80,9 +80,10 @@ jobs:
 
     - name: Build and push the image
       run: |
-        docker build . --tag ghcr.io/ralvescostati/node_base:${{ needs.ci.outputs.tag }}
-        docker run ghcr.io/ralvescostati/node_base:${{ needs.ci.outputs.tag }}
-        docker push ghcr.io/ralvescostati/node_base:${{ needs.ci.outputs.tag }}
+        echo ${{ needs.ci.outputs.tag }}
+        docker build . --tag ghcr.io/ralvescostati/node_base:latest
+        docker run ghcr.io/ralvescostati/node_base:latest
+        docker push ghcr.io/ralvescostati/node_base:latest
 
   deploy_dev:
     needs: registry
