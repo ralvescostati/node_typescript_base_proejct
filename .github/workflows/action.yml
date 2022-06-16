@@ -72,7 +72,7 @@ jobs:
 
     - name: Build and push the image
       env:
-        TAG = ${{ github.sha }}
+        TAG: ${{ github.sha }}
       run: |
         docker build . --tag ghcr.io/ralvescostati/node_base:${TAG}
         docker run ghcr.io/ralvescostati/node_base:${TAG}
