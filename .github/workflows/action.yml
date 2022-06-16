@@ -73,9 +73,9 @@ jobs:
     - name: Build and push the image
       run: |
         TAG=${{ github.sha }}
-        docker build . --tag ghcr.io/ralvescostati/node_base:${{ TAG }}"
-        docker run ghcr.io/ralvescostati/node_base:${{ TAG }}"
-        docker push ghcr.io/ralvescostati/node_base:${{ TAG }}"
+        docker build . --tag ghcr.io/ralvescostati/node_base:${{ TAG }}
+        docker run ghcr.io/ralvescostati/node_base:${{ TAG }}
+        docker push ghcr.io/ralvescostati/node_base:${{ TAG }}
 
   deploy_dev:
     needs: registry
