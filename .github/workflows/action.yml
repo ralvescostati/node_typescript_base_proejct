@@ -42,7 +42,9 @@ jobs:
   build:
     needs: ci
     if: github.event.pull_request.merged == true
+
     runs-on: ubuntu-latest
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
@@ -59,4 +61,17 @@ jobs:
         docker build . --tag ghcr.io/ralvescostati/node_base:latest
         docker run ghcr.io/ralvescostati/node_base:latest
         docker push ghcr.io/ralvescostati/node_base:latest
+
+  deploy_dev:
+    needs: build
+    if: github.ref == 'refs/heads/develop'
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Deploy Dev
+      run: echo "Deployed :)"
+  
+  deploy_prod:
+    needs: build
 
