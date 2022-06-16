@@ -80,7 +80,8 @@ jobs:
 
     - name: Build and push the image
       run: |
-        echo ${{ needs.ci.outputs.tag }}
+        echo "${{ needs.ci.outputs.tag }}"
+        echo "${{ needs.ci.outputs }}"
         docker build . --tag ghcr.io/ralvescostati/node_base:latest
         docker run ghcr.io/ralvescostati/node_base:latest
         docker push ghcr.io/ralvescostati/node_base:latest
@@ -100,5 +101,5 @@ jobs:
 
     steps:
     - name: Deploy Prod
-      run: echo "Deployed :~)" 
+      run: echo "Deployed :)" 
 
