@@ -81,6 +81,8 @@ jobs:
   deploy_dev:
     needs: registry
     if: ${{ github.ref == 'refs/heads/develop' }}
+    environment:
+      name: dev
     runs-on: ubuntu-latest
 
     steps:
@@ -88,6 +90,7 @@ jobs:
       run: echo "Deployed :)"
   
   deploy_prod:
+    needs: registry
     if: ${{ github.ref == 'refs/heads/main' }}
     environment:
       name: prod
