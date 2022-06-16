@@ -1,4 +1,4 @@
-name: API CI Develop
+name: Pipeline
 
 on:
   push:
@@ -41,8 +41,7 @@ jobs:
       run: npm run build
     
   build:
-    needs: ci
-    if: github.event.pull_request.merged == true
+    if: github.event_name == 'pull_request' && github.event.pull_request.merged == true
 
     runs-on: ubuntu-latest
 
