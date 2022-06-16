@@ -57,8 +57,8 @@ jobs:
       run: |
         GIT_BRANCH=${GITHUB_REF#refs/heads/}
         GIT_HASH=$(git rev-parse --short "$GITHUB_SHA")
-        echo ::set-output name=tag::${GIT_BRANCH}_${GIT_HASH}
-        echo "The version is ${GIT_BRANCH}_${GIT_HASH}"
+        echo ::set-output name=tag::${GIT_BRANCH}${GIT_HASH}
+        echo "The version is ${GIT_BRANCH}${GIT_HASH}"
 
     outputs:
       tag: ${{ steps.version.outputs.tag }}
@@ -83,8 +83,6 @@ jobs:
 
     - name: Build and push the image
       run: |
-        echo "${{ needs.ci.outputs.tag }}"
-        echo "${{ needs.ci.outputs }}"
         docker build . --tag ghcr.io/ralvescostati/node_base:${{ needs.ci.outputs.tag }}"
         docker run ghcr.io/ralvescostati/node_base:${{ needs.ci.outputs.tag }}"
         docker push ghcr.io/ralvescostati/node_base:${{ needs.ci.outputs.tag }}"
