@@ -82,7 +82,7 @@ jobs:
     needs: registry
     if: ${{ github.ref == 'refs/heads/develop' }}
     environment:
-      name: develop
+      name: dev
     runs-on: ubuntu-latest
 
     steps:
