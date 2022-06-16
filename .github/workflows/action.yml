@@ -1,25 +1,27 @@
-name: API CI Develop
+name: pipeline
 
 on:
   push:
-    branches: [main]
+    branches: 
+      - develop
+      - main
   pull_request:
-    branches: [main, develop]
-  
+    branches:
+      - '*'
+
 jobs:
   ci:
+    if: ${{ github.ref != 'refs/heads/main' }}
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [16.x]
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
-
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
+    
+    - name: Use Node.js
+      uses: actions/setup-node@v3
       with:
-        node-version: ${{ matrix.node-version }}
+        node-version: '16.x'
 
     - name: Install dependencies
       run: npm ci
@@ -33,13 +35,33 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-  build:
+    - name: Build
+      run: npm run build
+
+    - name: Artifact
+      uses: actions/upload-artifact@v2
+      if: ${{ github.ref == 'refs/heads/develop' }}
+      with:
+        name: artifact
+        path: |
+          dist
+          .env*
+          .dockerignore
+          Dockerfile
+          package*.json
+          README.md
+        retention-days: 1
+    
+  registry:
     needs: ci
+    if: ${{ github.ref == 'refs/heads/develop' }}
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+    - name: Download artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: artifact
 
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v1
@@ -48,9 +70,33 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.CR_PAT }}
 
-    - name: Build the image
+    - name: Build and push the image
+      env:
+        TAG: ${{ github.sha }}
       run: |
-        docker build . --tag ghcr.io/ralvescostati/node_base:latest
-        docker run ghcr.io/ralvescostati/node_base:latest
-        docker push ghcr.io/ralvescostati/node_base:latest
+        docker build . --tag ghcr.io/ralvescostati/node_base:${TAG}
+        docker run ghcr.io/ralvescostati/node_base:${TAG}
+        docker push ghcr.io/ralvescostati/node_base:${TAG}
+
+  deploy_dev:
+    needs: registry
+    if: ${{ github.ref == 'refs/heads/develop' }}
+    environment:
+      name: dev
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Deploy Dev
+      run: echo "Deployed :)"
+  
+  deploy_prod:
+    needs: registry
+    if: ${{ github.ref == 'refs/heads/main' }}
+    environment:
+      name: prod
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Deploy Prod
+      run: echo "Deployed :)" 
 
