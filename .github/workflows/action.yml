@@ -55,7 +55,6 @@ jobs:
         TAG: ${{ github.sha }}
       run: |
         docker build . --tag ghcr.io/ralvescostati/node_base:${TAG}
-        docker run ghcr.io/ralvescostati/node_base:${TAG}
         docker push ghcr.io/ralvescostati/node_base:${TAG}
 
   deploy_dev:
