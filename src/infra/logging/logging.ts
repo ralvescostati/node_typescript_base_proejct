@@ -1,6 +1,4 @@
 import pino from 'pino'
-// @ts-ignore
-import pinoInspector from 'pino-inspector'
 
 export default {
   new: () => {
@@ -10,7 +8,7 @@ export default {
       return pino({
         enabled: process.env.ENABLE_LOG === 'true',
         level: process.env.LOG_LEVEL || 'warn',
-        prettifier: pinoInspector,
+        prettifier: require('pino-inspector'),
         transport: {
           target: 'pino-pretty'
         }

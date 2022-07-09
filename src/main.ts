@@ -1,9 +1,10 @@
+/* eslint-disable import/first */
+require('newrelic')
 
 import ILogger from '@app/interfaces/i_logging'
 import Environments from '@infra/env/env'
 import { IHttpServer } from '@infra/server/http_server'
 import Container from './container'
-require('newrelic')
 
 ;(() => {
   Environments.register()
