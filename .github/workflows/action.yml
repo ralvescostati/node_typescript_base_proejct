@@ -59,7 +59,7 @@ jobs:
         docker push ghcr.io/ralvescostati/node_base:${TAG}
 
   deploy_dev:
-    needs: registry
+    needs: build
     if: ${{ github.ref == 'refs/heads/develop' }}
     environment:
       name: dev
@@ -70,7 +70,7 @@ jobs:
       run: echo "Deployed :)"
   
   deploy_prod:
-    needs: registry
+    needs: build
     if: ${{ github.ref == 'refs/heads/main' }}
     environment:
       name: prod
