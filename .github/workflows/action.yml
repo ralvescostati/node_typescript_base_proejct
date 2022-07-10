@@ -33,34 +33,15 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-    - name: Build
-      run: npm run build
-
-    - name: Artifact
-      uses: actions/upload-artifact@v2
-      if: ${{ github.ref == 'refs/heads/develop' }}
-      with:
-        name: artifact
-        path: |
-          dist
-          .env*
-          .dockerignore
-          Dockerfile
-          package*.json
-          README.md
-        retention-days: 1
     
-  registry:
+  build:
     needs: ci
     if: ${{ github.ref == 'refs/heads/develop' }}
     runs-on: ubuntu-latest
 
     steps:
-    - name: Download artifact
-      uses: actions/download-artifact@v2
-      with:
-        name: artifact
+    - name: Checkout repository
+      uses: actions/checkout@v2
 
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v1
@@ -74,11 +55,10 @@ jobs:
         TAG: ${{ github.sha }}
       run: |
         docker build . --tag ghcr.io/ralvescostati/node_base:${TAG}
-        docker run ghcr.io/ralvescostati/node_base:${TAG}
         docker push ghcr.io/ralvescostati/node_base:${TAG}
 
   deploy_dev:
-    needs: registry
+    needs: build
     if: ${{ github.ref == 'refs/heads/develop' }}
     environment:
       name: dev
@@ -89,7 +69,7 @@ jobs:
       run: echo "Deployed :)"
   
   deploy_prod:
-    needs: registry
+    needs: build
     if: ${{ github.ref == 'refs/heads/main' }}
     environment:
       name: prod
