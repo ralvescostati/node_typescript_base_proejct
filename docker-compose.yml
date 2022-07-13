@@ -1,0 +1,17 @@
+version: '3.7'
+
+services:
+  api:
+    container_name: api
+    build: .
+    ports:
+      - 3333:3333
+    environment:
+      - NODE_ENV=development
+      - DEBUG=false
+      - ENABLE_LOG=true
+      - LOG_LEVEL=debug
+      - NEW_RELIC_APP_NAME=try-logging
+      - NEW_RELIC_LOG=stdout 
+      - NEW_RELIC_DISTRIBUTED_TRACING_ENABLED=true
+      - NEW_RELIC_LICENSE_KEY=
